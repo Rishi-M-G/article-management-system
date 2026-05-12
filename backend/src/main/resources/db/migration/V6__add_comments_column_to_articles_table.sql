@@ -1,0 +1,2 @@
+ALTER TABLE articles
+ADD COLUMN comment_count INT NOT NULL DEFAULT 0;

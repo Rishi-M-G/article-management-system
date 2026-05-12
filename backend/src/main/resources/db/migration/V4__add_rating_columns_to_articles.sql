@@ -1,0 +1,3 @@
+ALTER TABLE articles
+ADD COLUMN average_ratings NUMERIC(2,1) NOT NULL DEFAULT 0,
+ADD COLUMN rating_count INT NOT NULL DEFAULT 0;

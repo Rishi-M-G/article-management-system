@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://article-manager-db.c67lxovmxrjt.us-east-1.rds.amazonaws.com:5432/postgres
+    username: postgres
+    password: ${DB_PASSWORD}
