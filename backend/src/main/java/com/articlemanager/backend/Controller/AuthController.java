@@ -2,7 +2,6 @@ package com.articlemanager.backend.Controller;
 
 import java.util.List;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,15 +21,13 @@ import com.articlemanager.backend.Service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
     private final UserService userService;
-
-    public AuthController(UserService userService) {
-        this.userService = userService;
-    }
 
     @Operation(summary = "Register a new user")
     @PostMapping("/register")
@@ -41,25 +38,24 @@ public class AuthController {
 
     @Operation(summary = "Login")
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody LoginRequestDTO requestDTO) {
-        userService.loginUser(requestDTO);
-        return ResponseEntity.status(HttpStatus.OK).body("Login successfull");
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO requestDTO) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.loginUser(requestDTO));
     }
 
     @Operation(summary = "Fetch all profiles")
-    @GetMapping("/allprofiles")
+    @GetMapping("/profiles")
     public ResponseEntity<List<LoginResponseDTO>> allProfiles() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getAllProfiles());
     }
 
     @Operation(summary = "Fetch Profile by ID")
-    @GetMapping("/profile")
-    public ResponseEntity<LoginResponseDTO> getProfileById(@RequestParam Long UserId) {
+    @GetMapping("/profiles/{id}")
+    public ResponseEntity<LoginResponseDTO> getProfileById(@PathVariable Long UserId) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getProfileById(UserId));
     }
 
     @Operation(summary = "Update Profile")
-    @PutMapping("/updateProfile")
+    @PutMapping("/profiles/{id}")
     public ResponseEntity<LoginResponseDTO> updateProfile(@RequestParam Long UserID,
             @Valid @RequestBody UserUpdateRequestDTO requestDTO) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateProfile(UserID, requestDTO));

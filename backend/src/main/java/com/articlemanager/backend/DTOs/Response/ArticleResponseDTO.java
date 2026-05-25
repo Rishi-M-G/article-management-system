@@ -1,6 +1,6 @@
 package com.articlemanager.backend.DTOs.Response;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import com.articlemanager.backend.entity.ArticleStatus;
 import com.articlemanager.backend.entity.User;
@@ -25,8 +25,8 @@ public class ArticleResponseDTO {
 
     private ArticleStatus status;
 
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
 }
