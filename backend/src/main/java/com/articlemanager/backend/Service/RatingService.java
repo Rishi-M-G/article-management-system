@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.articlemanager.backend.DTOs.Request.RateArticleRequestDTO;
 import com.articlemanager.backend.DTOs.Response.RateArticleResponseDTO;
+import com.articlemanager.backend.Exception.DuplicateResourceException;
+import com.articlemanager.backend.Exception.ResourceNotFoundException;
 import com.articlemanager.backend.Repository.ArticleRepository;
 import com.articlemanager.backend.Repository.RatingRepository;
 import com.articlemanager.backend.Repository.UserRepository;
@@ -15,40 +17,46 @@ import com.articlemanager.backend.entity.Articles;
 import com.articlemanager.backend.entity.Ratings;
 import com.articlemanager.backend.entity.User;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class RatingService {
-    private final ArticleRepository articleRepository;
-    private final UserRepository userRepository;
-    private final RatingRepository ratingRepository;
-    private final ArticleService articleService;
-    private static final Logger log = LoggerFactory.getLogger(RatingService.class);
+        private final ArticleRepository articleRepository;
+        private final UserRepository userRepository;
+        private final RatingRepository ratingRepository;
+        private final ArticleService articleService;
+        private static final Logger log = LoggerFactory.getLogger(RatingService.class);
 
-    public RateArticleResponseDTO rateArticle(RateArticleRequestDTO requestDTO) {
-        log.info("user id - {} has given {} rating for article id -{}", requestDTO.getUserId(), requestDTO.getRating(),
-                requestDTO.getArticleId());
+        @Transactional
+        public RateArticleResponseDTO rateArticle(RateArticleRequestDTO requestDTO) {
+                log.info("user id - {} has given {} rating for article id -{}", requestDTO.getUserId(),
+                                requestDTO.getRating(),
+                                requestDTO.getArticleId());
 
-        Articles article = articleRepository.findById(requestDTO.getArticleId())
-                .orElseThrow(() -> new RuntimeException("Article not found"));
+                if (ratingRepository.existsByUserIdAndArticlesId(requestDTO.getUserId(), requestDTO.getArticleId()))
+                        throw new DuplicateResourceException("User has already rated this article");
 
-        User author = userRepository.findById(requestDTO.getUserId())
-                .orElseThrow(() -> new RuntimeException("Author not found"));
+                Articles article = articleRepository.findById(requestDTO.getArticleId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Article", requestDTO.getArticleId()));
 
-        Ratings rate = new Ratings();
-        rate.setArticles(article);
-        rate.setUser(author);
-        rate.setRating(requestDTO.getRating());
+                User author = userRepository.findById(requestDTO.getUserId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Author", requestDTO.getUserId()));
 
-        ratingRepository.save(rate);
+                Ratings rate = new Ratings();
+                rate.setArticles(article);
+                rate.setUser(author);
+                rate.setRating(requestDTO.getRating());
 
-        BigDecimal newRate = articleService.updateRating(requestDTO.getArticleId(), requestDTO.getRating());
+                ratingRepository.save(rate);
 
-        RateArticleResponseDTO responseDTO = new RateArticleResponseDTO();
-        responseDTO.setRating(newRate);
-        responseDTO.setTotalRatings(null);
+                BigDecimal newRate = articleService.updateRating(requestDTO.getArticleId(), requestDTO.getRating());
 
-        return responseDTO;
-    }
+                RateArticleResponseDTO responseDTO = new RateArticleResponseDTO();
+                responseDTO.setRating(newRate);
+                responseDTO.setTotalRatings(null);
+
+                return responseDTO;
+        }
 }

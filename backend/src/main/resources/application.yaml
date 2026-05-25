@@ -25,6 +25,10 @@ spring:
     baseline-on-migrate: false
     validate-on-migrate: true
 
+  mvc:
+    problemdetails:
+      enabled: true
+
 logging:
   level:
     org.flywaydb: DEBUG

@@ -9,17 +9,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.articlemanager.backend.DTOs.Request.LoginRequestDTO;
 import com.articlemanager.backend.DTOs.Request.RegisterRequestDTO;
 import com.articlemanager.backend.DTOs.Request.UserUpdateRequestDTO;
 import com.articlemanager.backend.DTOs.Response.LoginResponseDTO;
+import com.articlemanager.backend.Exception.DuplicateResourceException;
+import com.articlemanager.backend.Exception.ResourceNotFoundException;
 import com.articlemanager.backend.Repository.UserRepository;
 import com.articlemanager.backend.entity.User;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -32,7 +31,7 @@ public class UserService {
     @Transactional
     public User registerUser(RegisterRequestDTO requestDTO) {
         if (userRepository.existsByEmail(requestDTO.getEmail())) {
-            throw new IllegalArgumentException("Email already in use");
+            throw new DuplicateResourceException("Email already registered: " + requestDTO.getEmail());
         }
 
         User user = new User();
@@ -47,11 +46,11 @@ public class UserService {
     public LoginResponseDTO loginUser(LoginRequestDTO requestDTO) {
 
         User user = userRepository.findByEmail(requestDTO.getEmail())
-                .orElseThrow(() -> new RuntimeException("No user registered with this email address"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "Credentials"));
 
         // Password check
         if (!passwordEncoder.matches(requestDTO.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new ResourceNotFoundException("User", "Credentials");
         }
 
         LoginResponseDTO responseDTO = new LoginResponseDTO();
@@ -83,7 +82,7 @@ public class UserService {
 
     public LoginResponseDTO getProfileById(Long Id) {
         User optionalUser = userRepository.findById(Id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found", Id));
 
         LoginResponseDTO responseDTO = new LoginResponseDTO();
         responseDTO.setId(optionalUser.getId());
@@ -98,7 +97,7 @@ public class UserService {
     public LoginResponseDTO updateProfile(Long UserId, UserUpdateRequestDTO requestDTO) {
 
         User optionalUser = userRepository.findById(UserId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found", UserId));
 
         optionalUser.setEmail(requestDTO.getEmail());
         optionalUser.setFirstName(requestDTO.getFirstName());
