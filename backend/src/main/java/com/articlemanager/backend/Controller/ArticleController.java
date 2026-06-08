@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.articlemanager.backend.DTOs.Request.ArticleRequestDTO;
+import com.articlemanager.backend.DTOs.Response.ApiResponse;
 import com.articlemanager.backend.DTOs.Response.ArticleResponseDTO;
 import com.articlemanager.backend.Service.ArticleService;
 import com.articlemanager.backend.entity.Articles;
@@ -31,7 +32,7 @@ public class ArticleController {
 
     @Operation(summary = "Get All Articles")
     @GetMapping
-    public ResponseEntity<List<ArticleResponseDTO>> getAllArticles() {
+    public ResponseEntity<ApiResponse<List<ArticleResponseDTO>>> getAllArticles() {
         List<Articles> articles = articleService.getAllArticles();
 
         List<ArticleResponseDTO> responseDTOs = new ArrayList<>();
@@ -51,7 +52,10 @@ public class ArticleController {
             responseDTOs.add(responseDTO);
 
         }
-        return ResponseEntity.status(HttpStatus.OK).body(responseDTOs);
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.setMessage("All articles fetched");
+        apiResponse.setData(apiResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
     @Operation(summary = "Get article by ID")
