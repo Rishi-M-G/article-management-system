@@ -60,15 +60,21 @@ public class ArticleController {
 
     @Operation(summary = "Get article by ID")
     @GetMapping("/{id}")
-    public ResponseEntity<ArticleResponseDTO> getArticleById(@PathVariable Long articleId) {
+    public ResponseEntity<ApiResponse<ArticleResponseDTO>> getArticleById(@PathVariable Long articleId) {
         ArticleResponseDTO responseDTO = articleService.getArticleById(articleId);
-        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.setMessage("Article fetched");
+        apiResponse.setData(responseDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
     @Operation(summary = "Add Article")
     @PostMapping("/add")
-    public ResponseEntity<ArticleResponseDTO> addArticle(@Valid @RequestBody ArticleRequestDTO requestDTO) {
+    public ResponseEntity<ApiResponse<ArticleResponseDTO>> addArticle(@Valid @RequestBody ArticleRequestDTO requestDTO) {
         ArticleResponseDTO responseDTO = articleService.addArticle(requestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.setMessage("Articled added successfully");
+        apiResponse.setData(responseDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 }

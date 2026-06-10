@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.articlemanager.backend.DTOs.Request.RateArticleRequestDTO;
+import com.articlemanager.backend.DTOs.Response.ApiResponse;
 import com.articlemanager.backend.DTOs.Response.RateArticleResponseDTO;
 import com.articlemanager.backend.Service.RatingService;
 
@@ -24,9 +25,13 @@ public class RatingController {
 
     @Operation(summary = "Rate an article")
     @PostMapping
-    public ResponseEntity<RateArticleResponseDTO> rateArticle(@Valid @RequestBody RateArticleRequestDTO requestDTO) {
+    public ResponseEntity<ApiResponse<RateArticleResponseDTO>> rateArticle(
+            @Valid @RequestBody RateArticleRequestDTO requestDTO) {
         RateArticleResponseDTO responseDTO = ratingService.rateArticle(requestDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.setMessage("Article rated successfully");
+        apiResponse.setData(responseDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
 
     }
 }

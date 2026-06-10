@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.articlemanager.backend.DTOs.Request.LoginRequestDTO;
 import com.articlemanager.backend.DTOs.Request.RegisterRequestDTO;
 import com.articlemanager.backend.DTOs.Request.UserUpdateRequestDTO;
+import com.articlemanager.backend.DTOs.Response.ApiResponse;
 import com.articlemanager.backend.DTOs.Response.LoginResponseDTO;
 import com.articlemanager.backend.Service.UserService;
 
@@ -31,33 +32,49 @@ public class AuthController {
 
     @Operation(summary = "Register a new user")
     @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequestDTO requestDTO) {
+    public ResponseEntity<ApiResponse> register(@Valid @RequestBody RegisterRequestDTO requestDTO) {
         userService.registerUser(requestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.setMessage("User registered successfully");
+        apiResponse.setData(null);
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
     @Operation(summary = "Login")
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO requestDTO) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.loginUser(requestDTO));
+    public ResponseEntity<ApiResponse<LoginResponseDTO>> login(@Valid @RequestBody LoginRequestDTO requestDTO) {
+
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.setMessage("Login successful");
+        apiResponse.setData(userService.loginUser(requestDTO));
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
     @Operation(summary = "Fetch all profiles")
     @GetMapping("/profiles")
-    public ResponseEntity<List<LoginResponseDTO>> allProfiles() {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getAllProfiles());
+    public ResponseEntity<ApiResponse<List<LoginResponseDTO>>> allProfiles() {
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.setMessage("All profiles fetched successfully");
+        apiResponse.setData(userService.getAllProfiles());
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
     @Operation(summary = "Fetch Profile by ID")
     @GetMapping("/profiles/{id}")
-    public ResponseEntity<LoginResponseDTO> getProfileById(@PathVariable Long UserId) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getProfileById(UserId));
+    public ResponseEntity<ApiResponse<LoginResponseDTO>> getProfileById(@PathVariable Long UserId) {
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.setMessage("Profile fetched");
+        apiResponse.setData(userService.getProfileById(UserId));
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
     @Operation(summary = "Update Profile")
     @PutMapping("/profiles/{id}")
-    public ResponseEntity<LoginResponseDTO> updateProfile(@RequestParam Long UserID,
+    public ResponseEntity<ApiResponse<LoginResponseDTO>> updateProfile(@RequestParam Long UserID,
             @Valid @RequestBody UserUpdateRequestDTO requestDTO) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.updateProfile(UserID, requestDTO));
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.setMessage("Profile updated");
+        apiResponse.setData(userService.updateProfile(UserID, requestDTO));
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 }
