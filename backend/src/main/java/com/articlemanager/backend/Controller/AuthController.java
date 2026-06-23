@@ -61,20 +61,20 @@ public class AuthController {
 
     @Operation(summary = "Fetch Profile by ID")
     @GetMapping("/profiles/{id}")
-    public ResponseEntity<ApiResponse<LoginResponseDTO>> getProfileById(@PathVariable Long UserId) {
+    public ResponseEntity<ApiResponse<LoginResponseDTO>> getProfileById(@PathVariable Long id) {
         ApiResponse apiResponse = new ApiResponse<>();
         apiResponse.setMessage("Profile fetched");
-        apiResponse.setData(userService.getProfileById(UserId));
+        apiResponse.setData(userService.getProfileById(id));
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
     @Operation(summary = "Update Profile")
     @PutMapping("/profiles/{id}")
-    public ResponseEntity<ApiResponse<LoginResponseDTO>> updateProfile(@RequestParam Long UserID,
+    public ResponseEntity<ApiResponse<LoginResponseDTO>> updateProfile(@PathVariable Long id,
             @Valid @RequestBody UserUpdateRequestDTO requestDTO) {
         ApiResponse apiResponse = new ApiResponse<>();
         apiResponse.setMessage("Profile updated");
-        apiResponse.setData(userService.updateProfile(UserID, requestDTO));
+        apiResponse.setData(userService.updateProfile(id, requestDTO));
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 }

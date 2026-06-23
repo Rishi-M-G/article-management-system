@@ -68,6 +68,9 @@ public class Articles {
     @Column(name = "rating_count", nullable = false)
     private Integer ratingCount;
 
+    @Column(name = "comment_count", nullable = false)
+    private Integer commentCount;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = Instant.now();

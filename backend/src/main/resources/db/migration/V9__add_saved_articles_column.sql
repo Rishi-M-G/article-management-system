@@ -1,0 +1,2 @@
+ALTER TABLE users
+ADD COLUMN saved_articles INT NOT NULL DEFAULT 0;

@@ -23,10 +23,13 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("articles/**").permitAll()
+                        .requestMatchers("/articles/**").permitAll()
                         .requestMatchers("/rate").permitAll()
+                        .requestMatchers("/comments/**").permitAll()
                         .requestMatchers("/docs/**", "/v3/api-docs", "/v3/api-docs/**").permitAll()
-                        .anyRequest().authenticated());
+                        .anyRequest().authenticated())
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(null));
 
         return http.build();
     }

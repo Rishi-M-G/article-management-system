@@ -54,14 +54,14 @@ public class ArticleController {
         }
         ApiResponse apiResponse = new ApiResponse<>();
         apiResponse.setMessage("All articles fetched");
-        apiResponse.setData(apiResponse);
+        apiResponse.setData(responseDTOs);
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
     @Operation(summary = "Get article by ID")
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<ArticleResponseDTO>> getArticleById(@PathVariable Long articleId) {
-        ArticleResponseDTO responseDTO = articleService.getArticleById(articleId);
+    public ResponseEntity<ApiResponse<ArticleResponseDTO>> getArticleById(@RequestParam Long id) {
+        ArticleResponseDTO responseDTO = articleService.getArticleById(id);
         ApiResponse apiResponse = new ApiResponse<>();
         apiResponse.setMessage("Article fetched");
         apiResponse.setData(responseDTO);
