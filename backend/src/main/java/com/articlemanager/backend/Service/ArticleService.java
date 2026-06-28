@@ -148,4 +148,8 @@ public class ArticleService {
 
                 return BigDecimal.valueOf(commentsCount).add(BigDecimal.ONE);
         }
+
+        // public List<ArticleResponseDTO> searchArticles(String query) {
+        //         log.info("article.search.request_received query={}", query);
+        // }
 }
