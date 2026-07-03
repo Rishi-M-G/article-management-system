@@ -70,11 +70,22 @@ public class ArticleController {
 
     @Operation(summary = "Add Article")
     @PostMapping("/add")
-    public ResponseEntity<ApiResponse<ArticleResponseDTO>> addArticle(@Valid @RequestBody ArticleRequestDTO requestDTO) {
+    public ResponseEntity<ApiResponse<ArticleResponseDTO>> addArticle(
+            @Valid @RequestBody ArticleRequestDTO requestDTO) {
         ArticleResponseDTO responseDTO = articleService.addArticle(requestDTO);
         ApiResponse apiResponse = new ApiResponse<>();
         apiResponse.setMessage("Articled added successfully");
         apiResponse.setData(responseDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+    }
+
+    @Operation(summary = "Search articles by keyword")
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<ArticleResponseDTO>>> searchArticles(@RequestParam String q) {
+        List<ArticleResponseDTO> results = articleService.searchArticles(q);
+        ApiResponse<List<ArticleResponseDTO>> apiResponse = new ApiResponse<>();
+        apiResponse.setMessage("Search results fetched");
+        apiResponse.setData(results);
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 }
