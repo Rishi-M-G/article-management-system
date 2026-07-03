@@ -1,6 +1,7 @@
 package com.articlemanager.backend.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -149,7 +150,38 @@ public class ArticleService {
                 return BigDecimal.valueOf(commentsCount).add(BigDecimal.ONE);
         }
 
-        // public List<ArticleResponseDTO> searchArticles(String query) {
-        //         log.info("article.search.request_received query={}", query);
-        // }
+        public List<ArticleResponseDTO> searchArticles(String query) {
+                log.info("article.search.request_received query={}", query);
+
+                // If the user sends a blank query, return nothing.
+                // websearch_to_query('english','') returns NULL in PostgreSQL
+                // which would match zero rows anyway - but this is cleaner and avoids a DB
+                // roundtrip
+
+                if (query == null || query.isBlank()) {
+                        log.info("article.search.empty_query_received");
+                        return List.of();
+                }
+
+                List<Articles> articles = articleRepository.searchPublishedArticles(query);
+                log.info("article.search.results_found count={} query={}", articles.size(), query);
+
+                // Map each Articles entity to ArticleResponseDTO - same pattern used in
+                // getArticleById and AddArticle
+                List<ArticleResponseDTO> responseDTOs = new ArrayList<>();
+                for (Articles article : articles) {
+                        ArticleResponseDTO responseDTO = new ArticleResponseDTO();
+                        responseDTO.setId(article.getId());
+                        responseDTO.setHeading(article.getHeading());
+                        responseDTO.setContent(article.getContent());
+                        responseDTO.setSummary(article.getSummary());
+                        responseDTO.setSlug(article.getSlug());
+                        responseDTO.setAuthorName(article.getAuthor().getFirstName());
+                        responseDTO.setStatus(article.getStatus());
+                        responseDTO.setCreatedAt(article.getCreatedAt());
+                        responseDTO.setUpdatedAt(article.getUpdatedAt());
+                        responseDTOs.add(responseDTO);
+                }
+                return responseDTOs;
+        }
 }
